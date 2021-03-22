@@ -4,7 +4,7 @@ const { healthRouter } = require('./routes');
 
 dotenv.config();
 const app = express();
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 7000;
 
 app.use('/health', healthRouter);
 app.listen(port, () => {
