@@ -2,7 +2,7 @@
 FROM node:alpine
 
 #Specify a working directory
-WORKDIR /usr/app
+WORKDIR /auth
 
 #Copy the dependencies file
 COPY ./package*.json ./package*.json

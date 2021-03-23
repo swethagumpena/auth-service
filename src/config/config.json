@@ -3,9 +3,9 @@
     "username": "postgres",
     "password": "mysecretpassword",
     "database": "login_dev",
-    "host": "postgres",
+    "host": "some-postgres",
     "dialect": "postgres",
-    "port":5432
+    "port": 5432
   },
   "test": {
     "username": "root",
