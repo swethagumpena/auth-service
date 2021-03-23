@@ -1,13 +1,10 @@
 const jwt = require('jsonwebtoken');
-const { retrieveToken } = require('../utils/redis.util');
+const redisUtil = require('../utils/redis.util');
+const jwtUtil  = require('../utils/jwt.util');
 
 const authenticateService = async (jwtToken) => {
-  await jwt.verify(jwtToken, process.env.JWT_SECRET, (err) => {
-    if (err) {
-      throw err;
-    }
-  });
-  const userData = await retrieveToken(jwtToken);
+  await jwtUtil.jwtVerify(jwtToken);
+  const userData = await redisUtil.retrieveToken(jwtToken);
   return userData;
 };
 
