@@ -1,6 +1,6 @@
 /* eslint-disable consistent-return */
 /* eslint-disable camelcase */
-const redisUtils = require('../utils/redis.utils');
+const redisUtils = require('../utils/redis.util');
 
 const logoutHandler = async (req, res) => {
   try {

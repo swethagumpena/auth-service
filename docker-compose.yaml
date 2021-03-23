@@ -1,5 +1,5 @@
-version: '3'
-services: 
+version: "3"
+services:
   backend:
     build:
       dockerfile: Dockerfile
@@ -8,15 +8,16 @@ services:
       - some-network
     ports:
       - 3000:80
-    depends_on: 
+    depends_on:
       - some-postgres
+
   some-postgres:
     image: postgres
     networks:
       - some-network
     volumes:
       - ./database:/var/lib/some-postgres/data
-    ports: 
+    ports:
       - 5000:5432
-    environment: 
+    environment:
       POSTGRES_PASSWORD: mysecretpassword

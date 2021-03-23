@@ -1,11 +1,13 @@
 const redis = require('redis');
 
-const client = redis.createClient({
+const REDIS_PORT = process.env.REDIS_PORT || 6379;
+
+const redisClient = redis.createClient({
   host: 'redis-v1', // container name
-  port: 6379,
+  port: REDIS_PORT,
 });
 
-client
+redisClient
   .on('connect', () => {
     console.log('Redis connect');
   })
@@ -25,4 +27,4 @@ client
     console.log('Redis end');
   });
 
-module.exports = { client };
+module.exports = { redisClient };

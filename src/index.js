@@ -1,7 +1,7 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const {
-  healthRouter, loginRouter, registerRouter, logoutRouter,
+  healthRouter, loginRouter, registerRouter, logoutRouter, authRouter,
 } = require('./routes');
 
 dotenv.config();
@@ -13,6 +13,7 @@ app.use('/health', healthRouter);
 app.use('/login', loginRouter);
 app.use('/logout', logoutRouter);
 app.use('/register', registerRouter);
+app.use('/validateToken', authRouter);
 app.listen(port, () => {
   console.log(`Server running at PORT ${port}`);
 });
