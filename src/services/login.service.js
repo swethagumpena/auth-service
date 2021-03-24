@@ -13,7 +13,7 @@ const loginUser = async (username, password) => {
   });
   if (user) {
     const jwtToken = jwt.sign({ username }, process.env.JWT_SECRET_KEY,
-      { expiresIn: process.env.ACCESS_TOKEN_EXPIRY_TIME });
+      { expiresIn: process.env.JWT_EXPIRY_TIME });
     await redisUtils.storeToken(jwtToken, username);
     return jwtToken;
   }
