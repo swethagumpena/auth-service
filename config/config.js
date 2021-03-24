@@ -1,7 +1,8 @@
 const env = require('dotenv');
+
 env.config();
 
-console.log('hey',process.env.DB_USERNAME);
+console.log('hey', process.env.DB_USERNAME);
 
 module.exports = {
   development: {
@@ -28,4 +29,4 @@ module.exports = {
     dialect: 'postgres',
     port: process.env.DB_PORT,
   },
-}
+};
