@@ -2,10 +2,11 @@
 FROM node:alpine
 
 #Specify a working directory
-WORKDIR /usr/app
+WORKDIR /auth
 
 #Copy the dependencies file
-COPY ./package*.json ./package*.json
+COPY ./package.json ./package.json
+COPY ./package-lock.json ./package-lock.json
 
 #Install dependencies
 RUN npm install 

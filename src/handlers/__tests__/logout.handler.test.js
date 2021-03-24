@@ -1,5 +1,5 @@
 const { logoutHandler } = require('../logout.handler');
-const redisUtils = require('../../utils/redis.utils');
+const redisUtils = require('../../utils/redis.util');
 
 jest.mock('redis', () => jest.requireActual('redis-mock'));
 

@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 const jwt = require('jsonwebtoken');
 const { User } = require('../models');
-const redisUtils = require('../utils/redis.utils');
+const redisUtils = require('../utils/redis.util');
 
 const loginUser = async (username, password) => {
   const user = await User.findOne({
