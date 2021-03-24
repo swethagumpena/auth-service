@@ -1,12 +1,16 @@
 const { loginHandler } = require('../login.handler');
-const service = require('../../services/login.service');
+const loginService = require('../../services/login.service');
 
-describe('Health Handler', () => {
+describe('Login Handler', () => {
   let mockJson;
-  let mockResponse;
+  let mockResponseJson;
+  let mockResponseSend;
   beforeEach(() => {
     mockJson = jest.fn();
-    mockResponse = {
+    mockResponseJson = {
+      status: jest.fn(() => ({ json: mockJson })),
+    };
+    mockResponseSend = {
       status: jest.fn(() => ({ send: mockJson })),
     };
   });
@@ -17,25 +21,35 @@ describe('Health Handler', () => {
       body: {
         username: 'hi',
         password: 'hi',
-        user_details: { hi: 'hi' },
       },
     };
-    jest.spyOn(service, 'createUser').mockResolvedValue(jwtToken);
-    await loginHandler(mockRequest, mockResponse);
-    expect(mockResponse.status).toHaveBeenCalledWith(201);
-    expect(mockJson).toHaveBeenCalledWith(jwtToken);
+    jest.spyOn(loginService, 'loginUser').mockResolvedValue(jwtToken);
+    await loginHandler(mockRequest, mockResponseJson);
+    expect(mockResponseJson.status).toHaveBeenCalledWith(200);
+    expect(mockJson).toHaveBeenCalledWith({ token: 'dnkjnvdjksnksd' });
   });
   it('should go to catch block when service throws error ', async () => {
     const mockRequest = {
       body: {
         username: 'hi',
         password: 'hi',
-        user_details: { hi: 'hi' },
       },
     };
-    jest.spyOn(service, 'createUser').mockImplementation(() => { throw new Error('error'); });
-    await loginHandler(mockRequest, mockResponse);
-    expect(mockResponse.status).toHaveBeenCalledWith(500);
-    expect(mockJson).toHaveBeenCalledWith();
+    jest.spyOn(loginService, 'loginUser').mockRejectedValue(Error('Unauthenticated'));
+    await loginHandler(mockRequest, mockResponseSend);
+    expect(mockResponseSend.status).toHaveBeenCalledWith(401);
+    expect(mockJson).toHaveBeenCalledWith('Unauthenticated');
+  });
+  it('should go to catch block when service throws error ', async () => {
+    const mockRequest = {
+      body: {
+        username: 'hi',
+        password: 'hi',
+      },
+    };
+    jest.spyOn(loginService, 'loginUser').mockRejectedValue(Error('error'));
+    await loginHandler(mockRequest, mockResponseSend);
+    expect(mockResponseSend.status).toHaveBeenCalledWith(500);
+    expect(mockJson).toHaveBeenCalledWith('error');
   });
 });

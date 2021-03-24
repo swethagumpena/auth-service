@@ -1,18 +1,23 @@
 /* eslint-disable camelcase */
 const jwt = require('jsonwebtoken');
 const { User } = require('../models');
-const { redisClient } = require('../redis');
+const redisUtils = require('../utils/redis.utils');
 
-const createUser = async (username, password, user_details) => {
-  User.findOrCreate({
-    where: { username },
-    defaults: { username, password, user_details },
+const loginUser = async (username, password) => {
+  const user = await User.findOne({
+    where: {
+      username,
+      password,
+    },
+
   });
-
-  const jwtToken = jwt.sign({ username },
-    process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRY_TIME });
-
-  await redisClient.setex(jwtToken, process.env.REDIS_EXPIRY_TIME, username);
-  return jwtToken;
+  if (user) {
+    const jwtToken = jwt.sign({ username }, process.env.JWT_SECRET_KEY,
+      { expiresIn: process.env.ACCESS_TOKEN_EXPIRY_TIME });
+    await redisUtils.storeToken(jwtToken, username);
+    return jwtToken;
+  }
+  throw new Error('Unauthenticated');
 };
-module.exports = { createUser };
+
+module.exports = { loginUser };

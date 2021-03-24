@@ -1,11 +1,12 @@
-/* eslint-disable no-unused-vars */
 const jwt = require('jsonwebtoken');
+const redisUtils = require('../../utils/redis.utils');
 
 jest.mock('redis', () => jest.requireActual('redis-mock'));
-const { createUser } = require('../login.service');
+
+const { loginUser } = require('../login.service');
 const { User } = require('../../models');
 
-describe('createUser', () => {
+describe('loginUser', () => {
   afterEach(() => jest.clearAllMocks());
   it('should return jwtToken ', async () => {
     const mockUsername = 'abc';
@@ -45,32 +46,22 @@ describe('createUser', () => {
       },
       false,
     ];
-
-    jest.spyOn(User, 'findOrCreate').mockResolvedValue(mockUser);
-
+    jest.spyOn(User, 'findOne').mockResolvedValue(mockUser);
     const jwtSignSpy = jest.spyOn(jwt, 'sign');
-    jwtSignSpy.mockResolvedValue(mockJWTToken);
-
-    const response = await createUser(mockUsername, mockPassword, mockUserDetails);
+    jwtSignSpy.mockReturnValue(mockJWTToken);
+    const spyOnRedisUtils = jest.spyOn(redisUtils, 'storeToken').mockResolvedValue(mockUsername);
+    const response = await loginUser(mockUsername, mockPassword);
+    expect(spyOnRedisUtils).toHaveBeenCalledWith(mockJWTToken, mockUsername);
     expect(response).toBe(mockJWTToken);
-    expect(jwtSignSpy).toHaveBeenCalledWith({
-      username: mockUsername,
-    },
-    process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRY_TIME });
+    expect(jwtSignSpy).toHaveBeenCalled();
   });
-
-  it('should throw error with invalid api call', async () => {
+  it('should throw error Unauthenticated', async () => {
     const mockUsername = 'abc';
     const mockPassword = 'jdnkjdnvkjs';
-    const mockJWTToken = '348yr834yt834yt83utirir';
-    const mockUserDetails = {
-      abc: 'akdfm',
-    };
-    const errorMessage = 'Invalid API Call';
-
-    jest.spyOn(User, 'findOrCreate').mockImplementation(() => { throw new Error(errorMessage); });
+    const errorMessage = 'Unauthenticated';
+    jest.spyOn(User, 'findOne').mockResolvedValue(null);
     try {
-      await createUser(mockUsername, mockPassword, mockUserDetails);
+      await loginUser(mockUsername, mockPassword);
     } catch (error) {
       expect(error.message).toBe(errorMessage);
     }
