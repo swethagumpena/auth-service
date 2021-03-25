@@ -1,6 +1,16 @@
-const env = require('dotenv');
+const dotenv = require('dotenv');
+const path = require('path');
+const appRoot = require('app-root-path');
 
-env.config();
+if (process.env.NODE_APP_ENV === 'local') {
+  const pathRoot = `${appRoot}/`;
+  // console.log("HEYYYYY", appRoot.path+`${process.env.NODE_APP_ENV}.env`);
+  dotenv.config({
+    path: path.resolve(appRoot.path,`${process.env.NODE_APP_ENV}.env`),
+  });
+
+} else dotenv.config();
+
 
 console.log('hey', process.env.DB_USERNAME);
 
