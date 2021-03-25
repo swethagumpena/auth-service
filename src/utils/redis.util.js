@@ -2,7 +2,7 @@ const redis = require('redis');
 const dotenv = require('dotenv');
 const { redisClient } = require('./redis.client');
 
-dotenv.config();
+dotenv.config({ path: `/Users/anjali_nair/Documents/Work/Tech-University/Authentication/auth-service/.env.local` });
 
 const storeToken = (token, username) => {
   redisClient.setex(token, process.env.REDIS_EXPIRY_TIME, username, redis.print);
