@@ -11,9 +11,11 @@ const loginUser = async (username, password) => {
       password,
     },
   });
+  let user_details;
 
-  const { user_details } = user;
-  if (!user) {
+  if (user){
+   user_details = user.user_details;
+  } else {
     throw new Error('No user registered with this name');
   }
   

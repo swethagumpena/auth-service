@@ -25,7 +25,17 @@ describe('authenticateService',  () => {
     redisUtilSpy.mockResolvedValue(mockUserName);
     const data = await authenticateService(mockJwtToken);
     expect(redisUtilSpy).toHaveBeenCalledWith(mockJwtToken);
-    expect(data).toBe(mockUserName);
-   
+    expect(data).toStrictEqual({"username":mockUserName});
+  });
+
+  it('should return null if token has expired', async () => {
+    const mockJwtToken = "161t2357647325";
+    const mockUserName = "appy385";
+    jest.spyOn(jwtUtil, 'jwtVerify').mockResolvedValue({username: mockUserName });
+    const redisUtilSpy = jest.spyOn(redisUtil, 'retrieveToken');
+    redisUtilSpy.mockResolvedValue(null);
+    const data = await authenticateService(mockJwtToken);
+    expect(redisUtilSpy).toHaveBeenCalledWith(mockJwtToken);
+    expect(data).toBe(null);
   });
 });

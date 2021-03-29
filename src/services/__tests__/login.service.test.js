@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const redisUtils = require('../../utils/redis.util');
+const bcrypt = require('bcrypt')
 
 jest.mock('redis', () => jest.requireActual('redis-mock'));
 
@@ -47,6 +48,7 @@ describe('loginUser', () => {
       false,
     ];
     jest.spyOn(User, 'findOne').mockResolvedValue(mockUser);
+    jest.spyOn(bcrypt,'compare').mockResolvedValue(true)
     const jwtSignSpy = jest.spyOn(jwt, 'sign');
     jwtSignSpy.mockReturnValue(mockJWTToken);
     const spyOnRedisUtils = jest.spyOn(redisUtils, 'storeToken').mockResolvedValue(mockUsername);
@@ -55,11 +57,57 @@ describe('loginUser', () => {
     expect(response).toBe(mockJWTToken);
     expect(jwtSignSpy).toHaveBeenCalled();
   });
+  it('should throw error No user registered with this name', async () => {
+    const mockUsername = 'abc';
+    const mockPassword = 'jdnkjdnvkjs';
+    const errorMessage = 'No user registered with this name';
+    jest.spyOn(User, 'findOne').mockResolvedValue(null);
+    try {
+      await loginUser(mockUsername, mockPassword);
+    } catch (error) {
+      expect(error.message).toBe(errorMessage);
+    }
+  });
   it('should throw error Unauthenticated', async () => {
     const mockUsername = 'abc';
     const mockPassword = 'jdnkjdnvkjs';
+    const mockUserDetails = {
+      abc: 'akdfm',
+    };
     const errorMessage = 'Unauthenticated';
-    jest.spyOn(User, 'findOne').mockResolvedValue(null);
+    const mockUser = [
+      {
+        dataValues: {
+          id: 13,
+          userName: mockUsername,
+          password: mockPassword,
+          updatedAt: '2021-03-12T12:54:20.461Z',
+          createdAt: '2021-03-12T12:54:20.461Z',
+          user_details: mockUserDetails,
+        },
+        _previousDataValues: {
+          id: 13,
+          userName: mockUsername,
+          password: mockPassword,
+          updatedAt: '2021-03-12T12:54:20.461Z',
+          createdAt: '2021-03-12T12:54:20.461Z',
+          user_details: mockUserDetails,
+        },
+        _options: {
+          isNewRecord: true,
+          _schema: null,
+          _schemaDelimiter: '',
+          attributes: undefined,
+          include: undefined,
+          raw: undefined,
+          silent: undefined,
+        },
+        isNewRecord: false,
+      },
+      false,
+    ];
+    jest.spyOn(User, 'findOne').mockResolvedValue(mockUser);
+    jest.spyOn(bcrypt,'compare').mockResolvedValue(false)  
     try {
       await loginUser(mockUsername, mockPassword);
     } catch (error) {
