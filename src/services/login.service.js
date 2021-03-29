@@ -1,5 +1,6 @@
 /* eslint-disable camelcase */
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt')
 const { User } = require('../models');
 const redisUtils = require('../utils/redis.util');
 
@@ -9,14 +10,26 @@ const loginUser = async (username, password) => {
       username,
       password,
     },
-
   });
-  if (user) {
-    const jwtToken = jwt.sign({ username }, process.env.JWT_SECRET_KEY,
+
+  const { user_details } = user;
+  if (!user) {
+    throw new Error('No user registered with this name');
+  }
+  
+  // password-hashed password coming from DB, user.password-coming from login request
+  if (await bcrypt.compare(password, user.password)) {
+    const jwtToken = jwt.sign({ username, user_details }, process.env.JWT_SECRET_KEY,
       { expiresIn: process.env.JWT_EXPIRY_TIME });
     await redisUtils.storeToken(jwtToken, username);
     return jwtToken;
   }
+  // if (user) {
+  //   const jwtToken = jwt.sign({ username }, process.env.JWT_SECRET_KEY,
+  //     { expiresIn: process.env.JWT_EXPIRY_TIME });
+  //   await redisUtils.storeToken(jwtToken, username);
+  //   return jwtToken;
+  // }
   throw new Error('Unauthenticated');
 };
 

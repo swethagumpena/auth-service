@@ -3,13 +3,10 @@ const path = require('path');
 const appRoot = require('app-root-path');
 
 if (process.env.NODE_APP_ENV === 'local') {
-  const pathRoot = `${appRoot}/`;
   dotenv.config({
-    path: path.resolve(appRoot.path,`${process.env.NODE_APP_ENV}.env`),
+    path: path.resolve(appRoot.path, `${process.env.NODE_APP_ENV}.env`),
   });
-
 } else dotenv.config();
-
 
 console.log('hey', process.env.DB_DATABASE);
 
