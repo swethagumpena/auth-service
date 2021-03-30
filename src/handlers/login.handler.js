@@ -4,7 +4,6 @@ const loginService = require('../services/login.service');
 const loginHandler = async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.log('plss',req.body)
     const token = await loginService.loginUser(email, password);
     res.status(200).json({ token });
   } catch (error) {
